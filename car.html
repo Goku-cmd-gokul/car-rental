@@ -9,23 +9,138 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
   <style>
-    body { margin: 0; padding: 0; font-family: 'Poppins', 'Segoe UI', sans-serif; background-color: #f8f9fa; }
-    header { position: sticky; top: 0; z-index: 1000; background-image: linear-gradient(180.4deg, rgba(0,6,10,1) 1%, rgba(1,190,237,1) 91.4%); color: white; padding: 20px 0; }
-    nav ul { list-style: none; padding: 0; margin: 0; }
-    nav ul li { display: inline; margin: 0 10px; }
-    nav ul li a { position: relative; padding: 6px 12px; color: white; text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
-    nav ul li a:hover { color: #00ff7f; }
-    nav ul li a::after { content: ""; position: absolute; left: 0; bottom: -2px; width: 0%; height: 2px; background-color: #00ff7f; transition: width 0.3s ease-in-out; }
-    nav ul li a:hover::after { width: 100%; }
-    nav ul li a.active { color: yellow; font-weight: bold; }
-    nav ul li a.active::after { width: 100%; background-color: yellow; }
-    .card img { height: 200px; object-fit: cover; border-radius: 10px; }
-    .card { border: none; border-radius: 12px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); margin-bottom: 30px; }
-    .form-container { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 450px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); z-index: 9999; }
-    .form-container h2 { margin-bottom: 20px; }
-    .form-container input { margin-bottom: 15px; }
-    #loading-spinner { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.4); z-index: 10000; justify-content: center; align-items: center; display: flex; }
-    @media (max-width: 768px) { .card img { height: 150px; } }
+    /* ---------- GLOBAL ---------- */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  background-color: #f8f9fa;
+}
+
+/* ---------- HEADER & NAV ---------- */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-image: linear-gradient(
+    180.4deg,
+    rgba(0, 6, 10, 1) 1%,
+    rgba(1, 190, 237, 1) 91.4%
+  );
+  color: white;
+  padding: 20px 0;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+nav ul li {
+  display: inline;
+  margin: 0 10px;
+}
+
+nav ul li a {
+  position: relative;
+  padding: 6px 12px;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+  color: #00ff7f;
+}
+
+nav ul li a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0%;
+  height: 2px;
+  background-color: #00ff7f;
+  transition: width 0.3s ease-in-out;
+}
+
+nav ul li a:hover::after {
+  width: 100%;
+}
+
+nav ul li a.active {
+  color: yellow;
+  font-weight: bold;
+}
+
+nav ul li a.active::after {
+  width: 100%;
+  background-color: yellow;
+}
+
+/* ---------- CAR CARDS ---------- */
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.card img {
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* ---------- BOOKING FORM ---------- */
+.form-container {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+}
+
+.form-container h2 {
+  margin-bottom: 20px;
+}
+
+.form-container input {
+  margin-bottom: 15px;
+}
+
+/* ---------- LOADING SPINNER ---------- */
+#loading-spinner {
+  display: none;              /* IMPORTANT */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 10000;
+
+  /* center spinner */
+  justify-content: center;
+  align-items: center;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .card img {
+    height: 150px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -120,49 +235,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Form submission
   document.getElementById("form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const carModel = document.getElementById("car-model").value;
+  e.preventDefault();
 
-    const submitBtn = e.submitter;
-    submitBtn.disabled = true;
-    submitBtn.innerText = "Booking...";
-    document.getElementById("loading-spinner").style.display = "flex";
+  const submitBtn = document.querySelector("#form button[type='submit']");
+  const spinner = document.getElementById("loading-spinner");
 
-    if (!name || !email || !phone || !carModel) {
-      alert("❗ Please fill in all fields.");
-      submitBtn.disabled = false;
-      submitBtn.innerText = "Submit";
-      document.getElementById("loading-spinner").style.display = "none";
-      return;
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Booking...";
+  spinner.style.display = "flex";
+
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const carModel = document.getElementById("car-model").value;
+
+  if (!name || !email || !phone || !carModel) {
+    alert("❗ Please fill in all fields.");
+    submitBtn.disabled = false;
+    submitBtn.innerText = "Submit";
+    spinner.style.display = "none";
+    return;
+  }
+
+  try {
+    const response = await fetch("http://127.0.0.1:5000/api/book", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, phone, carModel })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("✅ Booking successful!");
+      closeBookingForm();
+      document.getElementById("form").reset();
+    } else {
+      alert(`❌ Booking failed: ${data.message || "Unknown error"}`);
     }
-
-    try {
-      const response = await fetch("http://127.0.0.1:5000/api/book", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, phone, carModel })
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("✅ Booking successful!");
-        closeBookingForm();
-        document.getElementById("form").reset();
-      } else {
-        alert(`❌ Booking failed: ${data.message || "Unknown error"}`);
-      }
-    } catch (err) {
-      console.error("❌ Network/server error:", err);
-      alert("❌ Network or server error. Check console for details.");
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerText = "Submit";
-      document.getElementById("loading-spinner").style.display = "none";
-    }
-  });
+  } catch (err) {
+    console.error(err);
+    alert("❌ Network or server error.");
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerText = "Submit";
+    spinner.style.display = "none";
+  }
+});
 });
 </script>
 
