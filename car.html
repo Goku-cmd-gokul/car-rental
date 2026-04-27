@@ -234,33 +234,46 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Form submission
-  document.getElementById("form").addEventListener("submit", async (e) => {
+ document.getElementById("form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const submitBtn = document.querySelector("#form button[type='submit']");
   const spinner = document.getElementById("loading-spinner");
-
-  submitBtn.disabled = true;
-  submitBtn.innerText = "Booking...";
-  spinner.style.display = "flex";
 
   const name = document.getElementById("name").value.trim();
   const email = document.getElementById("email").value.trim();
   const phone = document.getElementById("phone").value.trim();
   const carModel = document.getElementById("car-model").value;
 
+  // ✅ Validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRegex = /^[0-9]{10}$/;
+
   if (!name || !email || !phone || !carModel) {
     alert("❗ Please fill in all fields.");
-    submitBtn.disabled = false;
-    submitBtn.innerText = "Submit";
-    spinner.style.display = "none";
     return;
   }
+
+  if (!emailRegex.test(email)) {
+    alert("❗ Invalid email format");
+    return;
+  }
+
+  if (!phoneRegex.test(phone)) {
+    alert("❗ Phone number must be 10 digits");
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Booking...";
+  spinner.style.display = "flex";
 
   try {
     const response = await fetch("http://127.0.0.1:5000/api/book", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ name, email, phone, carModel })
     });
 
@@ -273,6 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       alert(`❌ Booking failed: ${data.message || "Unknown error"}`);
     }
+
   } catch (err) {
     console.error(err);
     alert("❌ Network or server error.");
