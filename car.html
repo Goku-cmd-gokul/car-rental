@@ -280,12 +280,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const data = await response.json();
 
     if (response.ok) {
-      alert("✅ Booking successful!");
-      closeBookingForm();
-      document.getElementById("form").reset();
-    } else {
-      alert(`❌ Booking failed: ${data.message || "Unknown error"}`);
-    }
+  alert("✅ Booking successful! Redirecting to payment...");
+
+  // Optional: store booking data
+  localStorage.setItem("bookingData", JSON.stringify({
+    name,
+    email,
+    phone,
+    carModel
+  }));
+
+  // Redirect to payment page
+  window.location.href = "payment.html";
+}
 
   } catch (err) {
     console.error(err);
